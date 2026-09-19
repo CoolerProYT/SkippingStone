@@ -6,12 +6,12 @@ import com.coolerpromc.skippingstone.throwing.logic.PowerMeter;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.contextualbar.ContextualBarRenderer;
+import net.minecraft.client.gui.contextualbar.ContextualBar;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 
-public class PowerMeterHud implements ContextualBarRenderer {
+public class PowerMeterHud implements ContextualBar {
     private static final Identifier BAR_FRAME_SPRITE = Identifier.withDefaultNamespace("hud/experience_bar_background");
     private static final int RED = 0xFFD8403A;
     private static final int YELLOW = 0xFFE8C547;

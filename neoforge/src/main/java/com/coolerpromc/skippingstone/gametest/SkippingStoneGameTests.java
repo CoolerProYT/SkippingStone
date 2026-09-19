@@ -174,7 +174,7 @@ public class SkippingStoneGameTests {
 
         player.getInventory().clearContent();
         BlockPos absolute = helper.absolutePos(pos);
-        InteractionResult result = StonePickupHandler.onUseBlock(player, helper.getLevel(), InteractionHand.MAIN_HAND, new BlockHitResult(absolute.getCenter(), Direction.UP, absolute, false));
+        InteractionResult result = StonePickupHandler.onUseBlock(player, helper.getLevel(), InteractionHand.MAIN_HAND, new BlockHitResult(Vec3.atCenterOf(absolute), Direction.UP, absolute, false));
         boolean gotStone = player.getInventory().contains(stack -> stack.is(ModItems.SKIPPING_STONE.get()));
         String label = block + (waterBeside ? " +water beside" : "") + (waterOnTop ? " +water on top" : "");
         helper.assertValueEqual(gotStone, expectStone, Component.literal("stone from " + label));
