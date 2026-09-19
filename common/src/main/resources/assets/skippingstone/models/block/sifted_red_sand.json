@@ -1,0 +1,6 @@
+{
+  "parent": "skippingstone:block/sifted",
+  "textures": {
+    "texture": "minecraft:block/red_sand"
+  }
+}

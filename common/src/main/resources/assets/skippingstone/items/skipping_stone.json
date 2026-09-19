@@ -1,0 +1,22 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:component",
+    "component": "skippingstone:stone_tier",
+    "cases": [
+      {
+        "when": 1,
+        "model": { "type": "minecraft:model", "model": "skippingstone:item/skipping_stone_rough" }
+      },
+      {
+        "when": 2,
+        "model": { "type": "minecraft:model", "model": "skippingstone:item/skipping_stone_smooth" }
+      },
+      {
+        "when": 3,
+        "model": { "type": "minecraft:model", "model": "skippingstone:item/skipping_stone_perfect" }
+      }
+    ],
+    "fallback": { "type": "minecraft:model", "model": "skippingstone:item/skipping_stone_chipped" }
+  }
+}
