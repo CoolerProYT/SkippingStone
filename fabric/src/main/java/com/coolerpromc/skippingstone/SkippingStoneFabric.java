@@ -25,7 +25,7 @@ public class SkippingStoneFabric implements ModInitializer {
         SkippingStone.initPayloadType();
         ModStats.createStats();
 
-        Services.REGISTRY.applyServerboundPayloadRegistrations(SkippingStoneFabric::registerServerboundPayload);
+        Services.REGISTRY.applyServerBoundPayloadRegistrations(SkippingStoneFabric::registerServerBoundPayload);
 
         UseBlockCallback.EVENT.register(StonePickupHandler::onUseBlock);
         CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) -> SkippingStoneCommand.register(dispatcher));
@@ -33,7 +33,7 @@ public class SkippingStoneFabric implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(RecordMirrors::onServerStarted);
     }
 
-    private static <T extends HandledCustomPacketPayload> void registerServerboundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+    private static <T extends HandledCustomPacketPayload> void registerServerBoundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
         PayloadTypeRegistry.serverboundPlay().register(type, streamCodec);
         ServerPlayNetworking.registerGlobalReceiver(type, (payload, context) -> payload.handle(new FabricServerPayloadContext(context)));
     }

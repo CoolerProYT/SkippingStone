@@ -10,7 +10,6 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
-/** A ring lying flat on the water that expands quickly, then slows and fades, like a real ripple. */
 public class RippleParticle extends SingleQuadParticle {
     private static final FacingCameraMode FLAT_ON_WATER = (rotation, camera, partialTick) -> rotation.rotationX(-Mth.HALF_PI);
     private static final float START_RADIUS = 0.08F;

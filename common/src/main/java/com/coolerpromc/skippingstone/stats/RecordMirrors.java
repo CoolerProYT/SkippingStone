@@ -10,10 +10,6 @@ import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
-/**
- * Copies {@link SkipRecords} into the places players look: the vanilla Statistics screen and, if enabled, two
- * scoreboard objectives that servers can show with {@code /scoreboard objectives setdisplay}.
- */
 public class RecordMirrors {
     public static final String SKIPS_OBJECTIVE = "skippingstone.best_skips";
     public static final String DISTANCE_OBJECTIVE = "skippingstone.best_distance";
@@ -27,13 +23,11 @@ public class RecordMirrors {
         });
     }
 
-    /** Records are the source of truth, so a lost or edited stats file is corrected on the next join. */
     public static void onPlayerJoin(ServerPlayer player) {
         SkipRecords.PlayerRecord record = SkipRecords.get(player.level().getServer()).get(player.getUUID());
         updateStats(player, record);
     }
 
-    /** Fills the objectives with every stored record, including players who are offline. */
     public static void onServerStarted(MinecraftServer server) {
         if (!ModCommonConfig.SCOREBOARD_OBJECTIVES.get()) {
             return;

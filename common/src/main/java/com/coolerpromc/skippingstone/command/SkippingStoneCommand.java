@@ -14,13 +14,6 @@ import net.minecraft.server.players.NameAndId;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * <pre>
- * /skippingstone records                     your own bests
- * /skippingstone records &lt;player&gt;            another player's bests (works for offline players too)
- * /skippingstone records top [skips|distance] server leaderboard
- * </pre>
- */
 public class SkippingStoneCommand {
     private static final int LEADERBOARD_SIZE = 10;
 

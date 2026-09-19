@@ -62,7 +62,7 @@ public class SkippingStoneNeoForge {
     public static void onRegisterPayloadHandlers(RegisterPayloadHandlersEvent event) {
         SkippingStone.initPayloadType();
         PayloadRegistrar registrar = event.registrar("1");
-        Services.REGISTRY.applyServerboundPayloadRegistrations(new IRegistryHelper.ServerboundPayloadRegistrar() {
+        Services.REGISTRY.applyServerBoundPayloadRegistrations(new IRegistryHelper.ServerBoundPayloadRegistrar() {
             @Override
             public <T extends HandledCustomPacketPayload> void register(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
                 registrar.playToServer(type, streamCodec, (payload, context) -> payload.handle(new NeoForgePayloadContext(context)));

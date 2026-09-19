@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 public class FabricRegistryHelper implements IRegistryHelper {
-    private final List<ServerboundPayloadEntry<?>> serverboundPayloads = new ArrayList<>();
+    private final List<ServerBoundPayloadEntry<?>> serverboundPayloads = new ArrayList<>();
 
     @Override
     public <T extends Block> RegistryHandler.Blocks<T> registerBlock(String name, Function<BlockBehaviour.Properties, T> func, BlockBehaviour.Properties p) {
@@ -86,19 +86,19 @@ public class FabricRegistryHelper implements IRegistryHelper {
     }
 
     @Override
-    public <T extends HandledCustomPacketPayload> void registerServerboundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
-        this.serverboundPayloads.add(new ServerboundPayloadEntry<>(type, streamCodec));
+    public <T extends HandledCustomPacketPayload> void registerServerBoundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+        this.serverboundPayloads.add(new ServerBoundPayloadEntry<>(type, streamCodec));
     }
 
     @Override
-    public void applyServerboundPayloadRegistrations(ServerboundPayloadRegistrar registrar) {
-        for (ServerboundPayloadEntry<?> entry : this.serverboundPayloads) {
+    public void applyServerBoundPayloadRegistrations(ServerBoundPayloadRegistrar registrar) {
+        for (ServerBoundPayloadEntry<?> entry : this.serverboundPayloads) {
             entry.register(registrar);
         }
     }
 
-    private record ServerboundPayloadEntry<T extends HandledCustomPacketPayload>(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
-        private void register(ServerboundPayloadRegistrar registrar) {
+    private record ServerBoundPayloadEntry<T extends HandledCustomPacketPayload>(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+        private void register(ServerBoundPayloadRegistrar registrar) {
             registrar.register(this.type, this.streamCodec);
         }
     }

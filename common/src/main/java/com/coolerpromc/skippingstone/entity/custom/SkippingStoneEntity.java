@@ -46,14 +46,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-/**
- * A thrown skipping stone. Each time it touches water it bounces into the next hop of its {@link ThrowResult}, with a
- * launch velocity from {@link HopPhysics} so the hop covers exactly the calculated distance. Once the hops run out it
- * skims along the surface for a moment, then sinks. A red release sinks on first contact.
- *
- * <p>The hop sequence is geometric ({@code first * decay^i}), so it is synced once at spawn as three values. The client
- * replays the same bounces locally, which keeps the skipping smooth instead of waiting on server corrections.
- */
 public class SkippingStoneEntity extends ThrowableItemProjectile {
     private static final EntityDataAccessor<Float> DATA_FIRST_HOP = SynchedEntityData.defineId(SkippingStoneEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> DATA_HOP_DECAY = SynchedEntityData.defineId(SkippingStoneEntity.class, EntityDataSerializers.FLOAT);
@@ -65,12 +57,10 @@ public class SkippingStoneEntity extends ThrowableItemProjectile {
     private static final double SURFACE_OFFSET = 0.02;
     private static final int BOUNCE_COOLDOWN_TICKS = 1;
 
-    // Final skim: the stone slides just below the surface, slowed by water drag, until it is too slow to plane
     private static final double SKID_DEPTH = 0.06;
     private static final double SKID_MIN_SPEED = 0.08;
     private static final int SKID_MAX_TICKS = 14;
 
-    // Visual spin (client): degrees per tick per block/tick of horizontal speed
     private static final float SPIN_PER_SPEED = 90.0F;
     private static final float MIN_FLIGHT_SPIN = 6.0F;
     private static final float SINK_TILT_DEGREES = 70.0F;
@@ -82,13 +72,11 @@ public class SkippingStoneEntity extends ThrowableItemProjectile {
     private int lastBounceTick = -BOUNCE_COOLDOWN_TICKS - 1;
     private int skidTicks;
 
-    // Client visuals
     private float spin;
     private float oSpin;
     private float sinkTilt;
     private float oSinkTilt;
 
-    // Server only
     private boolean awardsStats;
     private double distanceTravelled;
     private Vec3 lastContact;
@@ -137,7 +125,6 @@ public class SkippingStoneEntity extends ThrowableItemProjectile {
         builder.define(DATA_HOP_COUNT, 0);
     }
 
-    /** The hop plan is not saved, so a reloaded stone would sink with its stats lost. Drop it on unload instead. */
     @Override
     public boolean shouldBeSaved() {
         return false;
@@ -151,7 +138,6 @@ public class SkippingStoneEntity extends ThrowableItemProjectile {
         return this.hopsDone;
     }
 
-    /** Horizontal distance between the first and the latest water contact. Server only. */
     public double getDistanceTravelled() {
         return this.distanceTravelled;
     }
@@ -251,7 +237,6 @@ public class SkippingStoneEntity extends ThrowableItemProjectile {
         Vec3 direction = this.horizontalDirection();
         this.setPos(this.getX(), surface + SURFACE_OFFSET, this.getZ());
         this.setDeltaMovement(direction.x * hop.horizontalSpeed(), hop.verticalSpeed(), direction.z * hop.horizontalSpeed());
-        // Otherwise next tick still sees the stale in-water flag and applies water drag, shortening the hop
         this.updateFluidInteraction();
         this.needsSync = true;
         this.lastBounceTick = this.tickCount;
@@ -266,7 +251,6 @@ public class SkippingStoneEntity extends ThrowableItemProjectile {
     }
 
     private void onSkip(ServerLevel level, double surface, double distance) {
-        // 1 for the first (biggest) skip, shrinking towards 0 for the last little ones
         float energy = (float) Math.clamp(distance / this.hopDistance(0), 0.0, 1.0);
         this.playSound(SoundEvents.PLAYER_SPLASH, 0.3F + 0.5F * energy, 1.6F - 0.6F * energy + this.random.nextFloat() * 0.1F);
         level.sendParticles(ParticleTypes.SPLASH, this.getX(), surface, this.getZ(), 4 + (int) (14 * energy), 0.1 + 0.1 * energy, 0.0, 0.1 + 0.1 * energy, 0.05 + 0.1 * energy);
@@ -289,7 +273,6 @@ public class SkippingStoneEntity extends ThrowableItemProjectile {
     }
 
     private void sendRipple(ServerLevel level, double surface, double strength) {
-        // Count 0 makes the x "speed" arrive exactly as given, which the ripple uses as its size
         level.sendParticles(ModParticles.RIPPLE.get(), this.getX(), surface + 0.01, this.getZ(), 0, strength, 0.0, 0.0, 1.0);
     }
 
@@ -325,7 +308,6 @@ public class SkippingStoneEntity extends ThrowableItemProjectile {
     }
 
     private void keepOnSurface(double surface) {
-        // Just under the surface so vanilla's water drag slows the slide
         this.setPos(this.getX(), surface - SKID_DEPTH, this.getZ());
         Vec3 motion = this.getDeltaMovement();
         this.setDeltaMovement(motion.x, 0.0, motion.z);
@@ -352,15 +334,12 @@ public class SkippingStoneEntity extends ThrowableItemProjectile {
         return fluid.is(FluidTags.WATER) ? pos.getY() + fluid.getHeight(this.level(), pos) : this.getY();
     }
 
-    /** Hitting land or a mob ends the throw; the stone drops so a missed throw does not cost it. */
     @Override
     protected void onHit(HitResult hitResult) {
         if (hitResult instanceof BlockHitResult blockHit) {
-            // Blocks holding water (kelp, seagrass, waterlogged blocks) should not stop a skip
             if (!this.level().getFluidState(blockHit.getBlockPos()).isEmpty()) {
                 return;
             }
-            // In shallow water a fast stone can cross the surface and reach the bed in one tick; that is still a skip
             if (this.phase == Phase.FLYING && blockHit.getDirection() == Direction.UP && this.level().getFluidState(blockHit.getBlockPos().above()).is(FluidTags.WATER)) {
                 if (this.canBounce()) {
                     this.onWaterContact();
@@ -386,7 +365,6 @@ public class SkippingStoneEntity extends ThrowableItemProjectile {
         }
     }
 
-    /** Once per throw, only when the owner beats a record they already had. */
     private void launchRecordFirework(ServerLevel level) {
         if (this.recordFireworkLaunched) {
             return;
@@ -421,7 +399,6 @@ public class SkippingStoneEntity extends ThrowableItemProjectile {
             return;
         }
         this.finished = true;
-        // Skip and distance records are both checked at each water contact, so any record firework has already launched
         if (this.getOwner() instanceof ServerPlayer player) {
             ThrowHandler.onThrowFinished(player, this.hopsDone, this.distanceTravelled, this.awardsStats && this.hopsDone > 0);
         }

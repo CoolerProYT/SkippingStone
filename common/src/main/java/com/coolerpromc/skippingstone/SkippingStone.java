@@ -8,7 +8,7 @@ import com.coolerpromc.skippingstone.item.ModCreativeTabs;
 import com.coolerpromc.skippingstone.item.ModItems;
 import com.coolerpromc.skippingstone.network.HandledCustomPacketPayload;
 import com.coolerpromc.skippingstone.particle.ModParticles;
-import com.coolerpromc.skippingstone.network.ThrowStonePayload;
+import com.coolerpromc.skippingstone.network.ServerBoundThrowStonePayload;
 import com.coolerpromc.skippingstone.platform.Services;
 import com.coolerpromc.skippingstone.stats.ModStats;
 import com.coolerpromc.skippingstone.stats.RecordMirrors;
@@ -39,10 +39,10 @@ public class SkippingStone {
         }
         payloadTypesCollected = true;
 
-        registerServerboundPayload(ThrowStonePayload.TYPE, ThrowStonePayload.STREAM_CODEC);
+        registerServerboundPayload(ServerBoundThrowStonePayload.TYPE, ServerBoundThrowStonePayload.STREAM_CODEC);
     }
 
     private static <T extends HandledCustomPacketPayload> void registerServerboundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
-        Services.REGISTRY.registerServerboundPayload(type, streamCodec);
+        Services.REGISTRY.registerServerBoundPayload(type, streamCodec);
     }
 }

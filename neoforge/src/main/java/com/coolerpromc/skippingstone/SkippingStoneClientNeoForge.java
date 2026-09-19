@@ -35,7 +35,6 @@ public class SkippingStoneClientNeoForge {
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
         event.wrapLayer(VanillaGuiLayers.CONTEXTUAL_INFO_BAR_BACKGROUND, vanilla -> (graphics, deltaTracker) -> PowerMeterHud.extractInfoBar(graphics, deltaTracker, vanilla::render));
-        // The foreground part of the info bar (e.g. locator bar waypoints) would draw over the meter
         event.wrapLayer(VanillaGuiLayers.CONTEXTUAL_INFO_BAR, vanilla -> (graphics, deltaTracker) -> PowerMeterHud.extractHiddenWhileActive(graphics, deltaTracker, vanilla::render));
         event.wrapLayer(VanillaGuiLayers.EXPERIENCE_LEVEL, vanilla -> (graphics, deltaTracker) -> PowerMeterHud.extractHiddenWhileActive(graphics, deltaTracker, vanilla::render));
     }

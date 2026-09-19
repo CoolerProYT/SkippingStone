@@ -19,17 +19,9 @@ import net.minecraft.world.level.Level;
 
 import java.util.function.Consumer;
 
-/**
- * Held-use item: holding use charges the power meter, releasing throws. The meter itself is only drawn on the
- * client ({@code PowerMeterHud}); the server resolves the throw once the client's {@code ThrowStonePayload} arrives.
- */
 public class SkippingStoneItem extends Item {
     private static final int MAX_USE_DURATION = 72000;
 
-    /**
-     * Client-only hook, installed by client init, so this class never references client classes and stays
-     * safe to load on a dedicated server.
-     */
     public static ReleaseListener clientReleaseListener = (player, stack, ticksUsed) -> {};
 
     public SkippingStoneItem(Properties properties) {
@@ -58,7 +50,6 @@ public class SkippingStoneItem extends Item {
 
     @Override
     public ItemUseAnimation getUseAnimation(ItemStack stack) {
-        // TODO(animation): pick a wind-up pose once the thrown stone entity exists
         return ItemUseAnimation.NONE;
     }
 
@@ -77,7 +68,6 @@ public class SkippingStoneItem extends Item {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
         builder.accept(Component.translatable("tooltip.skippingstone.stone_tier", ModCommonConfig.tier(getTier(stack)).displayName()).withStyle(ChatFormatting.GRAY));
     }

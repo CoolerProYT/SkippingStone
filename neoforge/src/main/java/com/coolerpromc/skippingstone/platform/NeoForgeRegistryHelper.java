@@ -44,7 +44,7 @@ public class NeoForgeRegistryHelper implements IRegistryHelper {
     public static final DeferredRegister<Identifier> STATS = DeferredRegister.create(BuiltInRegistries.CUSTOM_STAT, Constants.MODID);
     public static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Constants.MODID);
 
-    private final List<ServerboundPayloadEntry<?>> serverboundPayloads = new ArrayList<>();
+    private final List<ServerBoundPayloadEntry<?>> serverboundPayloads = new ArrayList<>();
 
     @Override
     public <T extends Block> RegistryHandler.Blocks<T> registerBlock(String name, Function<BlockBehaviour.Properties, T> func, BlockBehaviour.Properties p) {
@@ -89,13 +89,13 @@ public class NeoForgeRegistryHelper implements IRegistryHelper {
     }
 
     @Override
-    public <T extends HandledCustomPacketPayload> void registerServerboundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
-        this.serverboundPayloads.add(new ServerboundPayloadEntry<>(type, streamCodec));
+    public <T extends HandledCustomPacketPayload> void registerServerBoundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+        this.serverboundPayloads.add(new ServerBoundPayloadEntry<>(type, streamCodec));
     }
 
     @Override
-    public void applyServerboundPayloadRegistrations(ServerboundPayloadRegistrar registrar) {
-        for (ServerboundPayloadEntry<?> entry : this.serverboundPayloads) {
+    public void applyServerBoundPayloadRegistrations(ServerBoundPayloadRegistrar registrar) {
+        for (ServerBoundPayloadEntry<?> entry : this.serverboundPayloads) {
             entry.register(registrar);
         }
     }
@@ -110,8 +110,8 @@ public class NeoForgeRegistryHelper implements IRegistryHelper {
         STATS.register(eventBus);
     }
 
-    private record ServerboundPayloadEntry<T extends HandledCustomPacketPayload>(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
-        private void register(ServerboundPayloadRegistrar registrar) {
+    private record ServerBoundPayloadEntry<T extends HandledCustomPacketPayload>(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec) {
+        private void register(ServerBoundPayloadRegistrar registrar) {
             registrar.register(this.type, this.streamCodec);
         }
     }

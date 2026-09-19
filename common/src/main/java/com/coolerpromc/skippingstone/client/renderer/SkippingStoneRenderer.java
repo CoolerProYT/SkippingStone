@@ -14,11 +14,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * Like vanilla's ThrownItemRenderer, but instead of a camera-facing sprite the stone lies flat, faces its direction of
- * travel and spins like a real skipped stone: faster when it moves faster, nose up while climbing and down while
- * falling, and it tips edge-down and flutters once it sinks.
- */
 public class SkippingStoneRenderer extends EntityRenderer<SkippingStoneEntity, SkippingStoneRenderer.State> {
     private static final float BASE_TILT_DEGREES = 10.0F;
     private static final float ARC_TILT_FACTOR = 0.6F;
@@ -65,11 +60,9 @@ public class SkippingStoneRenderer extends EntityRenderer<SkippingStoneEntity, S
         poseStack.pushPose();
         poseStack.translate(0.0F, state.boundingBoxHeight / 2.0F, 0.0F);
         poseStack.mulPose(Axis.YP.rotationDegrees(state.heading));
-        // Lie flat with the leading edge slightly raised, the way a stone planes across the surface
         poseStack.mulPose(Axis.XP.rotationDegrees(90.0F - state.tilt));
         poseStack.mulPose(Axis.ZP.rotationDegrees(state.spin));
         poseStack.scale(SCALE, SCALE, SCALE);
-        // The GROUND transform lifts items by 2px; undo it so the stone is centred on its hitbox
         poseStack.translate(0.0F, -0.125F, 0.0F);
         state.item.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
         poseStack.popPose();

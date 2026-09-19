@@ -59,7 +59,6 @@ class PowerMeterTest {
         assertEquals(0.30, PowerMeter.greenWidthForTier(0, 3, 0.30, 0.10), EPS);
         assertEquals(0.20, PowerMeter.greenWidthForTier(1, 3, 0.30, 0.10), EPS);
         assertEquals(0.10, PowerMeter.greenWidthForTier(2, 3, 0.30, 0.10), EPS);
-        // out of range clamps; a single tier uses the lowest-tier width
         assertEquals(0.10, PowerMeter.greenWidthForTier(7, 3, 0.30, 0.10), EPS);
         assertEquals(0.30, PowerMeter.greenWidthForTier(0, 1, 0.30, 0.10), EPS);
     }

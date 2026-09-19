@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class StoneThrowCalculatorTest {
     private static final double EPS = 1e-9;
 
-    // Round numbers so expected values are easy to verify by hand; unrelated to the in-game defaults.
     private static ThrowTuning tuning(double decayRate, double minSkipThreshold) {
         return new ThrowTuning(-20, 40, List.of(1.0, 2.0), 10, decayRate, minSkipThreshold, 1.0, 0.55);
     }
@@ -81,14 +80,12 @@ class StoneThrowCalculatorTest {
 
     @Test
     void firstSkipExactlyAtThresholdIsNotCounted() {
-        // first = 10, threshold = 10 → strictly-greater rule excludes it
         StoneThrowCalculator calc = new StoneThrowCalculator(tuning(0.5, 10.0));
         assertTrue(calc.calculate(MeterZone.GREEN, 0, -20).sank());
     }
 
     @Test
     void skipCountMatchesClosedForm() {
-        // n = number of i >= 0 with first * r^i > threshold = ceil(log(threshold / first) / log(r))
         StoneThrowCalculator calc = new StoneThrowCalculator(tuning(0.78, 0.5));
         ThrowResult result = calc.calculate(MeterZone.GREEN, 1, -20);
         double first = result.skipDistances().getFirst();

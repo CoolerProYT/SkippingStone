@@ -42,11 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-/**
- * In-world checks that a thrown stone really plays out its calculated skips and that the record firework only fires
- * when a player beats a record they already had. Only loaded when game tests are enabled for this namespace (the dev
- * runs set {@code neoforge.enabledGameTestNamespaces}); run with {@code runGameTestServer}.
- */
+@SuppressWarnings("removal")
 public class SkippingStoneGameTests {
     private static final DeferredRegister<Consumer<GameTestHelper>> TEST_FUNCTIONS = DeferredRegister.create(Registries.TEST_FUNCTION, Constants.MODID);
     private static final Map<String, Consumer<GameTestHelper>> TESTS = new LinkedHashMap<>();
@@ -137,14 +133,10 @@ public class SkippingStoneGameTests {
         });
         TESTS.put("stones_only_come_from_shoreline_sand_and_gravel", helper -> {
             ServerPlayer player = helper.makeMockServerPlayerInLevel();
-            // gravel with water beside it: yields a stone
             assertPickup(helper, player, new BlockPos(1, 1, 1), Blocks.GRAVEL, true, false, true);
             assertPickup(helper, player, new BlockPos(5, 1, 1), Blocks.SAND, true, false, true);
-            // submerged: water on top, even with water beside it
             assertPickup(helper, player, new BlockPos(9, 1, 1), Blocks.GRAVEL, true, true, false);
-            // dry: no water beside it
             assertPickup(helper, player, new BlockPos(13, 1, 1), Blocks.SAND, false, false, false);
-            // dirt no longer counts
             assertPickup(helper, player, new BlockPos(17, 1, 1), Blocks.DIRT, true, false, false);
             helper.succeed();
         });
@@ -182,8 +174,7 @@ public class SkippingStoneGameTests {
 
         player.getInventory().clearContent();
         BlockPos absolute = helper.absolutePos(pos);
-        InteractionResult result = StonePickupHandler.onUseBlock(player, helper.getLevel(), InteractionHand.MAIN_HAND,
-            new BlockHitResult(absolute.getCenter(), Direction.UP, absolute, false));
+        InteractionResult result = StonePickupHandler.onUseBlock(player, helper.getLevel(), InteractionHand.MAIN_HAND, new BlockHitResult(absolute.getCenter(), Direction.UP, absolute, false));
         boolean gotStone = player.getInventory().contains(stack -> stack.is(ModItems.SKIPPING_STONE.get()));
         String label = block + (waterBeside ? " +water beside" : "") + (waterOnTop ? " +water on top" : "");
         helper.assertValueEqual(gotStone, expectStone, Component.literal("stone from " + label));
@@ -196,13 +187,10 @@ public class SkippingStoneGameTests {
     }
 
     private static void assertSunk(GameTestHelper helper, SkippingStoneEntity stone) {
-        helper.assertTrue(stone.isSinking(), Component.literal("stone has not sunk yet (removed=" + stone.isRemoved() + ", skips=" + stone.getSkipsPerformed()
-            + ", pos=" + helper.relativeVec(stone.position()) + ", inWater=" + stone.isInWater() + ", age=" + stone.tickCount + ")"));
+        helper.assertTrue(stone.isSinking(), Component.literal("stone has not sunk yet (removed=" + stone.isRemoved() + ", skips=" + stone.getSkipsPerformed() + ", pos=" + helper.relativeVec(stone.position()) + ", inWater=" + stone.isInWater() + ", age=" + stone.tickCount + ")"));
     }
 
-    /** Builds a long pool along the test's +x axis and throws a stone down it. */
     private static SkippingStoneEntity throwStone(GameTestHelper helper, ThrowResult result, @Nullable ServerPlayer owner) {
-        // The empty test structure only keeps its own chunk ticking; the pool reaches well beyond it
         BlockPos poolStart = helper.absolutePos(BlockPos.ZERO);
         BlockPos poolEnd = helper.absolutePos(new BlockPos(POOL_LENGTH, 0, POOL_WIDTH));
         for (int cx = Math.min(poolStart.getX(), poolEnd.getX()) >> 4; cx <= Math.max(poolStart.getX(), poolEnd.getX()) >> 4; cx++) {
@@ -222,11 +210,8 @@ public class SkippingStoneGameTests {
 
         Vec3 start = helper.absoluteVec(new Vec3(1.5, 3.5, POOL_WIDTH / 2.0 + 0.5));
         var stack = SkippingStoneItem.withTier(ModItems.SKIPPING_STONE.toStack(), PERFECT_TIER);
-        SkippingStoneEntity stone = owner == null
-            ? new SkippingStoneEntity(helper.getLevel(), start.x, start.y, start.z, stack, result)
-            : new SkippingStoneEntity(helper.getLevel(), owner, stack, result);
+        SkippingStoneEntity stone = owner == null ? new SkippingStoneEntity(helper.getLevel(), start.x, start.y, start.z, stack, result) : new SkippingStoneEntity(helper.getLevel(), owner, stack, result);
         stone.setPos(start);
-        // Thrown along the test's +x axis, whatever rotation the test was placed with
         Vec3 along = helper.absoluteVec(new Vec3(1, 0, 0)).subtract(helper.absoluteVec(Vec3.ZERO)).normalize();
         stone.setDeltaMovement(along.x * 0.6, -0.15, along.z * 0.6);
         helper.assertTrue(helper.getLevel().addFreshEntity(stone), Component.literal("stone could not be spawned"));

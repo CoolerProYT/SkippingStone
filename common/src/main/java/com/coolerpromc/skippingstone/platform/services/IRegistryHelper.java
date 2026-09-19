@@ -39,10 +39,10 @@ public interface IRegistryHelper {
     RegistryHandler<Identifier, Identifier> registerStat(String name);
     <T> RegistryHandler.Components<T> registerDataComponent(String name, UnaryOperator<DataComponentType.Builder<T>> builder);
 
-    <T extends HandledCustomPacketPayload> void registerServerboundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec);
-    void applyServerboundPayloadRegistrations(ServerboundPayloadRegistrar registrar);
+    <T extends HandledCustomPacketPayload> void registerServerBoundPayload(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec);
+    void applyServerBoundPayloadRegistrations(ServerBoundPayloadRegistrar registrar);
 
-    interface ServerboundPayloadRegistrar {
+    interface ServerBoundPayloadRegistrar {
         <T extends HandledCustomPacketPayload> void register(CustomPacketPayload.Type<T> type, StreamCodec<? super RegistryFriendlyByteBuf, T> streamCodec);
     }
 

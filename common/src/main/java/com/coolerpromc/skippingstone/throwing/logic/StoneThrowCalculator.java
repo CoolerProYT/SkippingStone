@@ -3,21 +3,7 @@ package com.coolerpromc.skippingstone.throwing.logic;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Turns a release (meter zone, stone tier, pitch) into skip distances. Pure Java; see {@link ThrowTuning} for inputs.
- *
- * <pre>
- * angleEfficiency  = 1 - clamp(|idealAngle - pitch| / angleTolerance, 0, 1)
- * baseVelocity     = powerFactor * qualityVelocityMultiplier(tier)
- * firstSkipDist    = baseVelocity * angleEfficiency * baseDistance
- * skipDistances[i] = firstSkipDist * decayRate^i, while > minSkipThreshold
- * </pre>
- */
 public final class StoneThrowCalculator {
-    /**
-     * Guard against pathological configs (e.g. a threshold of 1e-300). It is not a gameplay cap: with
-     * {@link ThrowTuning}'s validation, any sane config ends far sooner.
-     */
     static final int SAFETY_SKIP_LIMIT = 10_000;
 
     private final ThrowTuning tuning;

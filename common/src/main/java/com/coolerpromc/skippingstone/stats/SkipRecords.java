@@ -17,15 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Source of truth for every player's personal bests, saved per world in {@code data/skippingstone/skip_records.dat}.
- * Kept in one server-wide store (rather than a player attachment) so offline players' records stay available for
- * leaderboards.
- */
 public class SkipRecords extends SavedData {
-    /**
-     * @param name last known player name, so leaderboards and scoreboards can show players who are offline
-     */
     public record PlayerRecord(String name, int bestSkips, double bestDistance) {
         public static final PlayerRecord NONE = new PlayerRecord("", 0, 0);
 
@@ -35,7 +27,6 @@ public class SkipRecords extends SavedData {
             Codec.DOUBLE.fieldOf("bestDistance").forGetter(PlayerRecord::bestDistance)
         ).apply(i, PlayerRecord::new));
 
-        /** Best distance in whole blocks, for places that only hold integers (scoreboards). */
         public int bestDistanceBlocks() {
             return (int) Math.floor(this.bestDistance);
         }
@@ -52,7 +43,6 @@ public class SkipRecords extends SavedData {
         }
     }
 
-    /** Result of submitting a throw: the record before and after, and which parts improved. */
     public record Update(PlayerRecord previous, PlayerRecord current) {
         public boolean newSkipRecord() {
             return current.bestSkips() > previous.bestSkips();
@@ -67,19 +57,13 @@ public class SkipRecords extends SavedData {
         }
     }
 
-    /**
-     * Notified whenever a player sets a new personal best. This is the hook for mirroring top scores elsewhere, e.g.
-     * onto a vanilla Scoreboard objective for display. The store above stays the source of truth.
-     */
     @FunctionalInterface
     public interface RecordListener {
         void onRecordImproved(ServerPlayer player, Update update);
     }
 
-    private static final Codec<SkipRecords> CODEC = Codec.unboundedMap(UUIDUtil.STRING_CODEC, PlayerRecord.CODEC)
-        .xmap(SkipRecords::new, records -> records.records);
+    private static final Codec<SkipRecords> CODEC = Codec.unboundedMap(UUIDUtil.STRING_CODEC, PlayerRecord.CODEC).xmap(SkipRecords::new, records -> records.records);
 
-    // The data fixer runs unconditionally on load; command storage has no schema changes that touch our tag
     public static final SavedDataType<SkipRecords> TYPE = new SavedDataType<>(Constants.id("skip_records"), SkipRecords::new, CODEC, DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
 
     private static final List<RecordListener> LISTENERS = new ArrayList<>();
@@ -110,7 +94,6 @@ public class SkipRecords extends SavedData {
         return Map.copyOf(this.records);
     }
 
-    /** Best records first, at most {@code limit} entries. */
     public List<PlayerRecord> top(Ranking ranking, int limit) {
         return this.records.values().stream().sorted(ranking.order.reversed()).limit(limit).toList();
     }

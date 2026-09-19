@@ -11,11 +11,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 
-/**
- * Takes over the XP bar slot while a skipping stone is being charged. Loaders wrap the vanilla info-bar and
- * experience-level layers with {@link #extractInfoBar} / {@link #extractHiddenWhileActive}, so the real XP display
- * comes back automatically the moment the player stops using the stone.
- */
 public class PowerMeterHud implements ContextualBarRenderer {
     private static final Identifier BAR_FRAME_SPRITE = Identifier.withDefaultNamespace("hud/experience_bar_background");
     private static final int RED = 0xFFD8403A;
@@ -26,7 +21,6 @@ public class PowerMeterHud implements ContextualBarRenderer {
 
     private static final PowerMeterHud INSTANCE = new PowerMeterHud();
 
-    // What the player last saw, so the throw resolves against the rendered frame rather than the whole tick
     private static float lastRenderedCharge;
     private static int lastRenderedTicks = -1;
 
@@ -54,10 +48,6 @@ public class PowerMeterHud implements ContextualBarRenderer {
         }
     }
 
-    /**
-     * Charge time to report for a release. Uses the sub-tick value of the last rendered frame when it belongs to the
-     * same tick as the release (the HUD may be hidden with F1, or skipped a frame), otherwise the whole-tick count.
-     */
     public static float consumeRenderedCharge(int ticksUsed) {
         float charge = lastRenderedTicks == ticksUsed ? lastRenderedCharge : ticksUsed;
         lastRenderedTicks = -1;
@@ -82,7 +72,6 @@ public class PowerMeterHud implements ContextualBarRenderer {
         int yellowStart = toPixels(meter.yellowStart());
         int greenStart = toPixels(meter.greenStart());
 
-        // TODO(art): dedicated meter sprites; for now the vanilla XP bar frame with solid zone fills
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, BAR_FRAME_SPRITE, left, top, WIDTH, HEIGHT);
         fillZone(graphics, left, top, 0, yellowStart, RED);
         fillZone(graphics, left, top, yellowStart, greenStart, YELLOW);
@@ -105,7 +94,6 @@ public class PowerMeterHud implements ContextualBarRenderer {
     }
 
     private static void fillZone(GuiGraphicsExtractor graphics, int left, int top, int start, int end, int color) {
-        // Inset by one pixel so the frame's border stays visible
         int from = Math.max(start, 1);
         int to = Math.min(end, WIDTH - 1);
         if (to > from) {
