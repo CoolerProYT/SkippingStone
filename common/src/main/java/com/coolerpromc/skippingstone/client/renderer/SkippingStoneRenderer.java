@@ -59,9 +59,9 @@ public class SkippingStoneRenderer extends EntityRenderer<SkippingStoneEntity, S
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         poseStack.pushPose();
         poseStack.translate(0.0F, state.boundingBoxHeight / 2.0F, 0.0F);
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.heading));
-        poseStack.mulPose(Axis.XP.rotationDegrees(90.0F - state.tilt));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(state.spin));
+        poseStack.rotateDegrees(Axis.YP, state.heading);
+        poseStack.rotateDegrees(Axis.XP, 90.0F - state.tilt);
+        poseStack.rotateDegrees(Axis.ZP, state.spin);
         poseStack.scale(SCALE, SCALE, SCALE);
         poseStack.translate(0.0F, -0.125F, 0.0F);
         state.item.submit(poseStack, collector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);

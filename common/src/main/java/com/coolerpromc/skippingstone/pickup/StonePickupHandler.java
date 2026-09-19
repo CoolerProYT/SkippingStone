@@ -12,6 +12,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.Prediction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -45,7 +46,7 @@ public class StonePickupHandler {
         ItemStack stone = SkippingStoneItem.withTier(ModItems.SKIPPING_STONE.toStack(), rollTier(level.getBiome(pos), level.getRandom()));
         level.setBlock(pos, converted.get().defaultBlockState(), Block.UPDATE_ALL);
         level.playSound(null, pos, state.getSoundType().getBreakSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
-        player.getInventory().placeItemBackInInventory(stone);
+        player.getInventory().placeItemBackInInventory(stone, Prediction.SERVER_ONLY);
         return InteractionResult.SUCCESS_SERVER;
     }
 

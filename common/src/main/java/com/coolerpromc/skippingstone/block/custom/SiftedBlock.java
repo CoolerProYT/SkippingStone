@@ -1,6 +1,5 @@
 package com.coolerpromc.skippingstone.block.custom;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -10,16 +9,10 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class SiftedBlock extends Block {
-    public static final MapCodec<SiftedBlock> CODEC = simpleCodec(SiftedBlock::new);
     private static final VoxelShape SHAPE = Block.column(16.0, 0.0, 14.0);
 
     public SiftedBlock(Properties properties) {
         super(properties);
-    }
-
-    @Override
-    public MapCodec<SiftedBlock> codec() {
-        return CODEC;
     }
 
     @Override
